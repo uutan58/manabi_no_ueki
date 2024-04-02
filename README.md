@@ -164,3 +164,7 @@ MVP、本リリース時点でのサービスや機能は、ユーザーそれ�
 - Qiita API
 - PostgreSQL
 - Heroku
+
+## 画面遷移図
+
+Figma URL:https://www.figma.com/file/sjOk29B9kN0FSKbqQV3iMo/%E3%83%9D%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%AA%E3%82%AA?type=design&node-id=0-1&mode=design&t=PXHjXUIjIptafOlM-0
