@@ -168,3 +168,6 @@ MVP、本リリース時点でのサービスや機能は、ユーザーそれ�
 ## 画面遷移図
 
 Figma URL:https://www.figma.com/file/sjOk29B9kN0FSKbqQV3iMo/%E3%83%9D%E3%83%BC%E3%83%88%E3%83%95%E3%82%A9%E3%83%AA%E3%82%AA?type=design&node-id=0-1&mode=design&t=PXHjXUIjIptafOlM-0
+
+## ER図
+[![Image from Gyazo](https://i.gyazo.com/5433ab0bfe6299253e945f09363b1bfc.png)](https://gyazo.com/5433ab0bfe6299253e945f09363b1bfc)
