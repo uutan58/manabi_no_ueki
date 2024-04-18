@@ -55,6 +55,8 @@ gem "rails-i18n"
 gem "better_errors"
 gem "binding_of_caller"
 gem "devise"
+gem 'importmap-rails'
+gem 'tailwindcss-rails'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem

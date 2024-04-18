@@ -9,7 +9,7 @@
       <div class="card-body">
         <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
           <div class="mb-3 mt-4">
-            <%= f.email_field :email, class: "form-control", placeholder: "電話番号, ユーザ名, Eメール" %>
+            <%= f.email_field :email, class: "form-control", placeholder: "メールアドレス" %>
           </div>
 
           <div class="mb-3">
