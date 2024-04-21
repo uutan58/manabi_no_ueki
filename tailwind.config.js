@@ -1,5 +1,3 @@
-const defaultTheme = require("tailwindcss/defaultTheme");
-
 module.exports = {
   content: [
     './app/views/**/*.html.erb',
@@ -7,8 +5,12 @@ module.exports = {
     './app/assets/stylesheets/**/*.css',
     './app/javascript/**/*.js'
   ],
-  theme: {
-    extend: {},
+  plugins: [
+    require('daisyui')
+  ],
+  daisyui: {
+    themes: [
+      "bumblebee"
+    ],
   },
-  plugins: [require("@tailwindcss/forms"), require("@tailwindcss/aspect-ratio"), require("@tailwindcss/typography"), require("@tailwindcss/container-queries")],
-};
+}
