@@ -1,4 +1,4 @@
-module custom
+module Custom
   class TurboDeviseController < ApplicationController
     class Responder < ActionController::Responder
       def to_turbo_stream
