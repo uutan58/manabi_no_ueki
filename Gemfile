@@ -57,6 +57,7 @@ gem "binding_of_caller"
 gem "devise"
 gem 'importmap-rails'
 gem 'tailwindcss-rails'
+gem "letter_opener_web"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
