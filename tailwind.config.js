@@ -5,7 +5,12 @@ module.exports = {
     './app/assets/stylesheets/**/*.css',
     './app/javascript/**/*.js'
   ],
-  theme: {
-    extend: {},
+  plugins: [
+    require('daisyui')
+  ],
+  daisyui: {
+    themes: [
+      "bumblebee"
+    ],
   },
-};
+}
