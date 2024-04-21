@@ -55,7 +55,6 @@ gem "rails-i18n"
 gem "better_errors"
 gem "binding_of_caller"
 gem "devise"
-gem 'importmap-rails'
 gem "letter_opener_web"
 
 group :development, :test do
