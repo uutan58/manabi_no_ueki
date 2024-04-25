@@ -220,6 +220,7 @@ GEM
       websocket (~> 1.0)
     simple_calendar (2.4.3)
       rails (>= 3.0)
+    spring (4.2.1)
     sprockets (4.2.1)
       concurrent-ruby (~> 1.0)
       rack (>= 2.2.4, < 4)
@@ -275,6 +276,7 @@ DEPENDENCIES
   rails-i18n
   selenium-webdriver
   simple_calendar (~> 2.4)
+  spring
   sprockets-rails
   stimulus-rails
   turbo-rails
