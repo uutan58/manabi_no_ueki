@@ -7,13 +7,15 @@
     <div class="card text-center pt-5" style="width: 23rem;">
       <h1>ログイン画面</h1>
       <div class="card-body">
-        <%= form_for(resource, as: resource_name, url: session_path(resource_name)) do |f| %>
-          <div class="mb-3 mt-4">
-            <%= f.email_field :email, class: "form-control", placeholder: "メールアドレス" %>
+        <%= form_with model: @user, url: user_session_path do |f| %>
+          <div class="field">
+            <%= f.label :name %><br />
+            <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
           </div>
 
-          <div class="mb-3">
-            <%= f.password_field :password, class: "form-control", placeholder: "パスワード" %>
+          <div class="field">
+            <%= f.label :password %><br />
+            <%= f.password_field :password, autocomplete: "current-password" %>
           </div>
 
           <%= f.submit "ログイン", class: "btn btn-primary w-100" %>
