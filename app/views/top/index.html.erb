@@ -1,0 +1,8 @@
+<h1>スケジュール</h1>
+
+<%= month_calendar events: @schedules do |date, schedules| %>
+  <%= date.day %>
+  <% schedules.each do |schedule| %>
+    <div><%= schedule.title %></div>
+  <% end %>
+<% end %>

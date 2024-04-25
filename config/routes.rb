@@ -1,5 +1,4 @@
 Rails.application.routes.draw do
-  get 'top/index'
   devise_for :users
   root "staticpages#top"
 
