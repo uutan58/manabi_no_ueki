@@ -56,6 +56,7 @@ gem "better_errors"
 gem "binding_of_caller"
 gem "devise"
 gem "letter_opener_web"
+gem 'simple_calendar', '~> 2.4'
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
