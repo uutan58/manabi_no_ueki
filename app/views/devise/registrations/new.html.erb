@@ -6,28 +6,28 @@
       <h1>ユーザー登録</h1>
 
       <div class="card-body">
-        <%= form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
+        <%= form_with(model: resource, scope: :user, url: registration_path(resource_name), local: true) do |f| %>
           <div class="mb-3 mt-4">
             <%= f.email_field :email, class: "form-control", placeholder: "メールアドレス" %>
           </div>
 
           <div class="mb-3 mt-4">
-            <%= f.text_field :name, class: "form-control", placeholder: "名前" %>
+            <%= f.text_field :name, class: "form-control", placeholder: "名前", autocomplete: "username" %>
           </div>
           <div class="mb-3">
-            <%= f.password_field :password, class: "form-control", placeholder: "パスワード" %>
+            <%= f.password_field :password, class: "form-control", placeholder: "パスワード" , autocomplete: "new-password" %>
           </div>
 
           <div class="mb-3">
-            <%= f.password_field :password_confirmation, class: "form-control", placeholder: "パスワード確認" %>
+            <%= f.password_field :password_confirmation, class: "form-control", placeholder: "パスワード確認" , autocomplete: "new-password" %>
           </div>
 
           <%= f.submit "ユーザー登録", class: "btn btn-primary w-100" %>
         <% end %>
 
-        <% if notice %>
+        <% if notice.present? %>
           <p class="notice"><%= notice %></p>
-        <% elsif alert %>
+        <% elsif alert.present? %>
           <p class="alert"><%= alert %></p>
         <% end %>
       </div>
