@@ -1,7 +1,10 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: {
+    registrations: 'users/registrations'
+  }
   root "staticpages#top"
   get "top/index"
+  get "users/show" => "users#show"
   resources :schedules
 
   get "up" => "rails/health#show", as: :rails_health_check
