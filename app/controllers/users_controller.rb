@@ -1,11 +1,9 @@
 class UsersController < ApplicationController
   def show
-    @user = User.find(params[:id])
-  end
-
-  private
-
-  def user_params
-    params.require(:user).permit(:name, :email)
+    @user = User.find_by(id: params[:id]) || User.new
+    # @user = User.find_by(id: params[:id])
+    # unless @user
+    #   redirect_to root_path, alert: "ユーザーが見つかりません"
+    # end
   end
 end

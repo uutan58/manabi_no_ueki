@@ -1,11 +1,25 @@
-<h2>Users</h2>
-<hr />
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+  <div class="text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-6">プロフィール画面</h1>
 
-<p>
-    <strong>ユーザー名</strong>
-    <%= @user.name %>
-</p>
-<p>
-    <strong>e-mail</strong>
-    <%= @user.email %>
-</p>
+    <h3 class="text-xl text-gray-800 mb-2">ユーザー名</h3>
+    <p class="mb-4"><%= @user.name if @user %></p>
+
+    <h3 class="text-xl text-gray-800 mb-2">メールアドレス</h3>
+    <p class="mb-4"><%= @user.email if @user %></p>
+
+    <h3 class="text-xl text-gray-800 mb-2">自己紹介</h3>
+    <p class="mb-4">
+      <% if @user&.profile %>
+        <%= @user.profile.introduction %>
+      <% else %>
+        自己紹介が登録されていません。
+      <% end %>
+    </p>
+
+    <% if user_signed_in? %>
+      <%= link_to 'プロフィールを編集', edit_user_registration_path, class: "text-blue-500 hover:text-blue-800" %>
+    <% end %>
+
+  </div>
+</div>
