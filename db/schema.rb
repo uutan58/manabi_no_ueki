@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_02_083201) do
+ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,6 +43,23 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_02_083201) do
     t.index ["user_id"], name: "index_schedules_on_user_id"
   end
 
+  create_table "tasks", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "category_id", null: false
+    t.string "name", null: false
+    t.text "description"
+    t.integer "priority"
+    t.date "deadline"
+    t.date "start_date"
+    t.date "completion_date"
+    t.integer "status", default: 0
+    t.integer "completion_rate", default: 0
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["category_id"], name: "index_tasks_on_category_id"
+    t.index ["user_id"], name: "index_tasks_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.string "name"
     t.string "email", default: "", null: false
@@ -68,4 +85,6 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_02_083201) do
   add_foreign_key "profiles", "users"
   add_foreign_key "schedules", "categories"
   add_foreign_key "schedules", "users"
+  add_foreign_key "tasks", "categories"
+  add_foreign_key "tasks", "users"
 end
