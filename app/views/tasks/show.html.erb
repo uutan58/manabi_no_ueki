@@ -1,0 +1,30 @@
+<% content_for :title, "タスク詳細" %>
+<div class="container mt-5">
+  <h1 class="mb-4">タスク詳細</h1>
+
+  <table class="table">
+    <tbody>
+      <tr>
+        <th>タイトル</th>
+        <td><%= @task.title %></td>
+      </tr>
+      <tr>
+        <th>説明</th>
+        <td><%= @task.description %></td>
+      </tr>
+      <tr>
+        <th>期限</th>
+        <td><%= @task.due_date %></td>
+      </tr>
+      <tr>
+        <th>完了状況</th>
+        <td><%= @task.completed ? '完了' : '未完了' %></td>
+      </tr>
+    </tbody>
+  </table>
+
+  <br>
+
+  <%= link_to '編集', edit_task_path(@task), class: 'btn btn-warning' %>
+  <%= link_to '戻る', tasks_path, class: 'btn btn-secondary ms-3' %>
+</div>

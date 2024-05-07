@@ -6,6 +6,7 @@ Rails.application.routes.draw do
   get "top/index"
   get "users/show" => "users#show"
   resources :schedules
+  resources :tasks
 
   get "up" => "rails/health#show", as: :rails_health_check
 
