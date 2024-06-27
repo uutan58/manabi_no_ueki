@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title>ポートフォリオ</title>
-    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title><%= content_for?(:title) ? yield(:title) : "ポートフォリオ" %></title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
@@ -13,7 +13,7 @@
   <body>
     <p class="notice"><%= notice %></p>
     <%= render 'shared/header' %>
-      <%= yield %>
+    <%= yield %>
     <%= render 'shared/footer' %>
   </body>
 </html>
