@@ -6,7 +6,7 @@
     <tbody>
       <tr>
         <th>タイトル</th>
-        <td><%= @task.title %></td>
+        <td><%= @task.name %></td>
       </tr>
       <tr>
         <th>説明</th>
@@ -14,11 +14,15 @@
       </tr>
       <tr>
         <th>期限</th>
-        <td><%= @task.due_date %></td>
+        <td><%= @task.deadline %></td>
+      </tr>
+      <tr>
+        <th>カテゴリー</th>
+        <td><%= @task.category&.name || "No category" %></td>
       </tr>
       <tr>
         <th>完了状況</th>
-        <td><%= @task.completed ? '完了' : '未完了' %></td>
+        <td><%= translate_status(@task.status) %></td>
       </tr>
     </tbody>
   </table>
