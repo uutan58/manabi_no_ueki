@@ -1,8 +1,242 @@
-<h1>スケジュール</h1>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden; /* スクロールを無効化 */
+    }
+    header, footer {
+      background: #f8f9fa;
+      text-align: center;
+      padding: 10px 0;
+    }
+    #calendarContainer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden; /* スクロールを無効化 */
+    }
+    #calendarWrapper {
+      transform: scale(0.53); /* 縮小表示 */
+      transform-origin: top left; /* 縮小表示の起点を中央に設定 */
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      overflow: hidden; /* スクロールを無効化 */
+    }
+    #calendar {
+      width: 200%; /* 横幅を2倍に */
+      height: 200%; /* 高さも2倍に */
+    }
+  </style>
+  <title>カレンダー</title>
+</head>
+<body>
+  <header class="bg-gray-800 text-white p-4">
+    <h1 class="text-2xl font-bold">スケジュール管理</h1>
+  </header>
+  <div id="calendarContainer">
+    <div id="calendarWrapper">
+      <div id="calendar" class="p-4"></div>
+    </div>
+  </div>
+  <footer class="bg-gray-800 text-white p-4 text-center">
+    フッターの内容
+  </footer>
 
-<%= month_calendar events: @schedules do |date, schedules| %>
-  <%= date.day %>
-  <% schedules.each do |schedule| %>
-    <div><%= schedule.title %></div>
-  <% end %>
-<% end %>
+  <!-- 予定追加・編集フォーム -->
+  <div id="eventForm" style="display:none;" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
+    <form id="new_event" class="bg-white p-4 rounded-md shadow-md space-y-4">
+      <input type="text" id="event_title" placeholder="予定のタイトル" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="text" id="event_category" placeholder="カテゴリー" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="datetime-local" id="event_start" placeholder="開始時間" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="datetime-local" id="event_end" placeholder="終了時間" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="hidden" id="event_id">
+      <div class="flex space-x-2">
+        <button type="submit" class="btn btn-primary flex-1 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">保存</button>
+        <button type="button" class="btn btn-secondary flex-1 inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" id="cancel_event">キャンセル</button>
+        <button type="button" class="btn btn-danger flex-1 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" id="delete_event">削除</button>
+      </div>
+    </form>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof jQuery !== 'undefined') {
+        $('#calendar').fullCalendar({
+          header: {
+            left: 'prev,next today',
+            center: 'title',
+            right: 'month,agendaWeek,agendaDay'
+          },
+          events: '/schedules.json',
+          editable: true,
+          droppable: true,
+          selectable: true,
+          selectHelper: true,
+          select: function(start, end) {
+            $('#eventForm').show();
+            $('#event_start').val(moment(start).format('YYYY-MM-DDTHH:mm'));
+            $('#event_end').val(moment(end).format('YYYY-MM-DDTHH:mm'));
+            $('#event_id').val('');
+          },
+          eventDrop: function(event, delta, revertFunc) {
+            updateEvent(event);
+          },
+          eventResize: function(event, delta, revertFunc) {
+            updateEvent(event);
+          },
+          eventClick: function(event, jsEvent, view) {
+            $('#eventForm').show();
+            $('#event_title').val(event.title);
+            $('#event_category').val(event.category ? event.category.name : '');
+            $('#event_start').val(moment(event.start).format('YYYY-MM-DDTHH:mm'));
+            $('#event_end').val(event.end ? moment(event.end).format('YYYY-MM-DDTHH:mm') : '');
+            $('#event_id').val(event.id);
+
+            $('#new_event').off('submit').on('submit', function(e) {
+              e.preventDefault();
+              var title = $('#event_title').val();
+              var category_name = $('#event_category').val();
+              var start = $('#event_start').val();
+              var end = $('#event_end').val();
+              var event_id = $('#event_id').val();
+
+              $.ajax({
+                url: '/schedules/' + event_id,
+                method: 'PATCH',
+                data: {
+                  schedule: {
+                    title: title,
+                    category_name: category_name,
+                    start_at: start,
+                    end_at: end
+                  }
+                },
+                success: function(data) {
+                  var updatedEvent = $('#calendar').fullCalendar('clientEvents', data.id)[0];
+                  updatedEvent.title = data.title;
+                  updatedEvent.start = moment(data.start_at);
+                  updatedEvent.end = moment(data.end_at);
+                  $('#calendar').fullCalendar('updateEvent', updatedEvent);
+                  $('#eventForm').hide();
+                  $('#new_event')[0].reset();
+                  $('#calendar').fullCalendar('refetchEvents');
+                },
+                error: function(xhr) {
+                  alert('予定の保存中にエラーが発生しました: ' + xhr.responseText);
+                }
+              });
+            });
+          }
+        });
+
+        $('#new_event').on('submit', function(e) {
+          e.preventDefault();
+          var title = $('#event_title').val();
+          var category_name = $('#event_category').val();
+          var start = $('#event_start').val();
+          var end = $('#event_end').val();
+          var event_id = $('#event_id').val();
+
+          var method = event_id ? 'PATCH' : 'POST';
+          var url = event_id ? '/schedules/' + event_id : '/schedules';
+
+          $.ajax({
+            url: url,
+            method: method,
+            data: {
+              schedule: {
+                title: title,
+                category_name: category_name,
+                start_at: start,
+                end_at: end
+              }
+            },
+            success: function(data) {
+              if (method === 'POST') {
+                $('#calendar').fullCalendar('renderEvent', {
+                  id: data.id,
+                  title: data.title,
+                  start: data.start_at,
+                  end: data.end_at
+                }, true);
+              } else {
+                var event = $('#calendar').fullCalendar('clientEvents', data.id)[0];
+                event.title = data.title;
+                event.start = moment(data.start_at);
+                event.end = moment(data.end_at);
+                $('#calendar').fullCalendar('updateEvent', event);
+              }
+              $('#eventForm').hide();
+              $('#new_event')[0].reset();
+              $('#calendar').fullCalendar('refetchEvents');
+            },
+            error: function(xhr) {
+              alert('予定の保存中にエラーが発生しました: ' + xhr.responseText);
+            }
+          });
+        });
+
+        $('#cancel_event').on('click', function() {
+          $('#eventForm').hide();
+          $('#new_event')[0].reset();
+        });
+
+        $('#delete_event').on('click', function() {
+          var event_id = $('#event_id').val();
+
+          if (confirm('このイベントを削除しますか？')) {
+            $.ajax({
+              url: '/schedules/' + event_id,
+              method: 'DELETE',
+              success: function() {
+                $('#calendar').fullCalendar('removeEvents', event_id);
+                $('#eventForm').hide();
+                $('#new_event')[0].reset();
+              },
+              error: function() {
+                alert('予定の削除中にエラーが発生しました。');
+              }
+            });
+          }
+        });
+
+        function updateEvent(event) {
+          $.ajax({
+            url: '/schedules/' + event.id,
+            method: 'PATCH',
+            data: {
+              schedule: {
+                title: event.title,
+                start_at: moment(event.start).format('YYYY-MM-DDTHH:mm'),
+                end_at: event.end ? moment(event.end).format('YYYY-MM-DDTHH:mm') : null
+              }
+            },
+            success: function() {
+              $('#calendar').fullCalendar('refetchEvents');
+            },
+            error: function() {
+              alert('予定の更新中にエラーが発生しました。');
+            }
+          });
+        }
+      } else {
+        console.error('jQuery is not loaded');
+      }
+    });
+  </script>
+</body>
+</html>

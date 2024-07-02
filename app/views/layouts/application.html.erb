@@ -1,19 +1,58 @@
 <!DOCTYPE html>
 <html>
   <head>
-    <title><%= content_for?(:title) ? yield(:title) : "ポートフォリオ" %></title>
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ポートフォリオ</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
     <%= csrf_meta_tags %>
     <%= csp_meta_tag %>
 
-    <%= stylesheet_link_tag "application", "data-turbo-track": "reload" %>
+    <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
+
+    <!-- Load jQuery first -->
+    <%= javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js' %>
+
+    <!-- Load other scripts after jQuery -->
     <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+
+    <!-- Load FullCalendar CSS and JS -->
+    <%= stylesheet_link_tag 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' %>
+    <%= javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js' %>
+    <%= javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js' %>
+
+    <style>
+      body {
+        display: flex;
+        flex-direction: column;
+        min-height: 100vh;
+        margin: 0;
+      }
+
+      #content {
+        flex: 1;
+      }
+
+      footer {
+        position: absolute;
+        bottom: 0;
+        width: 100%;
+        background: #f8f9fa;
+        text-align: center;
+        padding: 10px 0;
+      }
+
+      #calendar {
+        flex: 1;
+        margin-bottom: 60px; /* Adjust as needed to ensure footer is visible */
+      }
+    </style>
   </head>
 
   <body>
     <p class="notice"><%= notice %></p>
     <%= render 'shared/header' %>
-    <%= yield %>
+    <div id="content">
+      <%= yield %>
+    </div>
     <%= render 'shared/footer' %>
   </body>
 </html>
