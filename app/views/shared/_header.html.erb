@@ -3,9 +3,15 @@
     <%= link_to 'ポートフォリオ', root_path, class: "btn btn-primary" %>
   </div>
 
-  <div class="lex items-center space-x-3 lg:mx-5">
-    <%= link_to '記事投稿', "#", class: "btn" %>
-    <%= link_to 'マイページ', "#", class: "btn" %>
-    <%= link_to 'ログアウト', "#", class: "btn" %>
+  <div class="flex items-center space-x-3 lg:mx-5">
+    <% if user_signed_in? %>
+      <%= link_to '記事投稿', "#", class: "btn" %>
+      <%= link_to 'マイページ', "#", class: "btn" %>
+      <%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: "btn" %>
+    <% else %>
+      <%= link_to '記事投稿', "#", class: "btn" %>
+      <%= link_to '新規登録', new_user_registration_path, class: "btn" %>
+      <%= link_to 'ログイン', new_user_session_path, class: "btn" %>
+    <% end %>
   </div>
 </header>

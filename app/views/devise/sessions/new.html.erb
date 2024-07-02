@@ -1,40 +1,37 @@
-<div class="container home-sections d-flex flex-row justify-content-center
-  align-items-center"
->
-  <div class="images-section pt-3 d-none d-lg-block"></div>
+<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
+  <div class="text-center">
+    <h1 class="text-4xl font-bold text-gray-900 mb-6">ログイン画面</h1>
 
-  <div class="login-section pt-3">
-    <div class="card text-center pt-5" style="width: 23rem;">
-      <h1>ログイン画面</h1>
+    <div class="card py-5" style="width: 23rem;">
       <div class="card-body">
         <%= form_with model: @user, url: user_session_path do |f| %>
-          <div class="field">
-            <%= f.label :name %><br />
-            <%= f.text_field :name, autofocus: true, autocomplete: "name" %>
+          <div class="mb-4">
+            <%= f.label :name, class: "block text-gray-800 text-sm font-bold mb-2" %>
+            <%= f.text_field :name, autofocus: true, autocomplete: "name", class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
           </div>
 
-          <div class="field">
-            <%= f.label :password %><br />
-            <%= f.password_field :password, autocomplete: "current-password" %>
+          <div class="mb-6">
+            <%= f.label :password, class: "block text-gray-800 text-sm font-bold mb-2" %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
           </div>
 
           <%= f.submit "ログイン", class: "btn btn-primary w-100" %>
         <% end %>
 
         <% if notice %>
-          <p class="notice"><%= notice %></p>
+          <p class="notice text-sm text-green-500 mt-3"><%= notice %></p>
         <% elsif alert %>
-          <p class="alert"><%= alert %></p>
+          <p class="alert text-sm text-red-500 mt-3"><%= alert %></p>
         <% end %>
 
-        <a href="#" class="fs-6 d-block my-4 text-decoration-none"> パスワードを忘れた？</a>
+        <a href="#" class="fs-6 d-block my-4 text-decoration-none text-blue-500 hover:text-blue-800">パスワードを忘れた？</a>
       </div>
     </div>
 
-    <div class="card text-center py-2 mt-3" style="width: 23rem;">
+    <div class="card py-2 mt-3" style="width: 23rem;">
       <div class="card-text">
         アカウントを持っていない？
-        <%= link_to "ユーザー登録", new_user_registration_path, class: "fs-6 my-4 text-decoration-none text-info" %>
+        <%= link_to "ユーザー登録", new_user_registration_path, class: "text-blue-500 hover:text-blue-800" %>
       </div>
     </div>
   </div>

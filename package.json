@@ -15,7 +15,7 @@
     "webpack-cli": "^3.3.12"
   },
   "scripts": {
-    "build": "node esbuild.config.js",
+    "build": "esbuild app/javascript/*.* --bundle --sourcemap --outdir=app/assets/builds --public-path=/assets",
     "build:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
   },
   "devDependencies": {

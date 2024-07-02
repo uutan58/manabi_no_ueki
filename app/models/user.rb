@@ -2,7 +2,9 @@ class User < ApplicationRecord
   has_many :schedules, dependent: :destroy
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable, :trackable
+         :recoverable, :rememberable, :validatable, :confirmable
+
+  has_one :profile
 
   validates :name,                presence: true,
                                   length: { maximum: 50 }
