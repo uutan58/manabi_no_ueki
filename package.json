@@ -4,15 +4,21 @@
   "dependencies": {
     "@hotwired/stimulus": "^3.2.2",
     "@hotwired/turbo-rails": "^8.0.4",
+    "@rails/webpacker": "5.4.4",
     "autoprefixer": "^10.4.19",
     "daisyui": "^4.10.2",
     "esbuild": "^0.20.2",
     "esbuild-sass-plugin": "^3.2.0",
     "postcss": "^8.4.38",
-    "tailwindcss": "^3.4.3"
+    "tailwindcss": "^3.4.3",
+    "webpack": "^4.46.0",
+    "webpack-cli": "^3.3.12"
   },
   "scripts": {
     "build": "node esbuild.config.js",
     "build:css": "tailwindcss -i ./app/assets/stylesheets/application.tailwind.css -o ./app/assets/builds/application.css --minify"
+  },
+  "devDependencies": {
+    "webpack-dev-server": "^3"
   }
 }
