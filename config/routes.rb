@@ -15,5 +15,7 @@ Rails.application.routes.draw do
   resources :schedules, only: [:index, :create, :update, :destroy]
   get "up" => "rails/health#show", as: :rails_health_check
 
+  resources :tasks
+
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 end

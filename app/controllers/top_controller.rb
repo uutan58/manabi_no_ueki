@@ -3,5 +3,6 @@ class TopController < ApplicationController
 
   def index
     @schedules = Schedule.all
+    @tasks = Task.all
   end
 end
