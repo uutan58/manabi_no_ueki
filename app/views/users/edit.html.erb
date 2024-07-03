@@ -1,0 +1,25 @@
+<div class="flex flex-col items-center justify-start min-h-screen">
+  <h1 class="text-4xl font-bold my-6 fixed top-0 w-full text-center py-4 bg-gray-800 text-white font-bold">プロフィール編集</h1>
+  <div class="flex flex-col items-center justify-center w-full max-w-6xl mx-auto" style="margin-top: 80px;">
+    <div class="text-center mt-6">
+      <%= form_with(model: @user, local: true) do |form| %>
+        <div class="mb-6">
+          <%= form.label :name, "ユーザー名", class: "text-xl block font-bold mb-2 text-white" %>
+          <%= form.text_field :name, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+        </div>
+
+        <div class="mb-6">
+          <%= form.fields_for :profile do |profile_form| %>
+            <%= profile_form.label :introduction, "自己紹介", class: "text-xl block font-bold mb-2 text-white" %>
+            <%= profile_form.text_area :introduction, rows: 10, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+          <% end %>
+        </div>
+
+        <div class="flex justify-center space-x-4">
+          <%= form.submit '更新', class: "btn btn-primary" %>
+          <%= link_to '戻る', user_path(@user), class: "btn btn-secondary" %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+</div>

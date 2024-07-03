@@ -1,14 +1,17 @@
 Rails.application.routes.draw do
   devise_for :users
 
-  # ログイン前のHOME画面
   unauthenticated do
     root "staticpages#index"
   end
 
-  # ログイン後のTOP画面
   authenticated :user do
     root "top#index", as: :authenticated_root
+  end
+
+  get 'mypage', to: 'my_pages#show'
+  resources :users, only: [:show, :edit, :update] do
+    resource :profile, only: [:edit, :update]
   end
 
   get "top/index"

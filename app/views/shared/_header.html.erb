@@ -6,7 +6,7 @@
   <div class="flex items-center space-x-3 lg:mx-5">
     <% if user_signed_in? %>
       <%= link_to '記事投稿', "#", class: "btn" %>
-      <%= link_to 'マイページ', "#", class: "btn" %>
+      <%= link_to 'マイページ', mypage_path, class: "btn" %>
       <%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: "btn" %>
     <% else %>
       <%= link_to '記事投稿', "#", class: "btn" %>

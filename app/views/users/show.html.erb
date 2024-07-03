@@ -1,14 +1,13 @@
-<div class="flex flex-col items-center justify-center min-h-screen bg-gray-100">
-  <div class="text-center">
-    <h1 class="text-4xl font-bold text-gray-900 mb-6">プロフィール画面</h1>
-
-    <h3 class="text-xl text-gray-800 mb-2">ユーザー名</h3>
+<div class="flex flex-col items-center justify-start min-h-screen text-white p-4">
+  <h1 class="text-4xl font-bold my-6 fixed top-0 w-full text-center text-white">プロフィール画面</h1>
+  <div class="text-center w-full mt-32" style="margin-top: 80px;">
+    <h3 class="text-xl mb-2 block font-bold">ユーザー名</h3>
     <p class="mb-4"><%= @user.name if @user %></p>
 
-    <h3 class="text-xl text-gray-800 mb-2">メールアドレス</h3>
+    <h3 class="text-xl mb-2 block font-bold">メールアドレス</h3>
     <p class="mb-4"><%= @user.email if @user %></p>
 
-    <h3 class="text-xl text-gray-800 mb-2">自己紹介</h3>
+    <h3 class="text-xl mb-2 block font-bold">自己紹介</h3>
     <p class="mb-4">
       <% if @user&.profile %>
         <%= @user.profile.introduction %>
@@ -18,8 +17,8 @@
     </p>
 
     <% if user_signed_in? %>
-      <%= link_to 'プロフィールを編集', edit_user_registration_path, class: "text-blue-500 hover:text-blue-800" %>
+      <%= link_to 'プロフィールを編集', edit_user_path(@user), class: "btn btn-primary mx-2" %>
     <% end %>
-
+    <%= link_to '戻る', mypage_path, class: "btn btn-secondary mx-2" %>
   </div>
 </div>

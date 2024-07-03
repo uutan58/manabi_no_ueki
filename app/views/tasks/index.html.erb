@@ -1,11 +1,13 @@
 <% content_for :title, "タスク一覧" %>
-<div class="container mt-5">
+<div class="flex flex-col items-center justify-start min-h-screen text-white p-4">
+  <h1 class="text-4xl font-bold my-6 fixed top-0 w-full text-center py-4 text-white">TO DOリスト</h1>
+  <div class="text-center w-full mt-32"  style="margin-top: 80px;">
+  <%= link_to '新規作成', new_task_path, class: 'btn btn-success' %>
   <h1 class="mb-4"><%= params[:status] == 'completed' ? '完了したタスク' : '未完了のタスク' %>一覧</h1>
-    <%= link_to '新規タスク作成', new_task_path, class: 'btn btn-success' %>
 
   <table class="table">
     <thead>
-      <tr>
+      <tr class="text-white">
         <th>タイトル</th>
         <th>期限</th>
         <th>完了状況</th>
@@ -31,4 +33,5 @@
 
   <%= link_to '未完了のタスク', tasks_path(status: 'active'), class: 'btn btn-success' %>
   <%= link_to '完了したタスク', tasks_path(status: 'completed'), class: 'btn btn-success' %>
+  </div>
 </div>
