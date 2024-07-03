@@ -1,34 +1,25 @@
 <% content_for :title, "タスク詳細" %>
-<div class="container mt-5">
-  <h1 class="mb-4">タスク詳細</h1>
+<div class="flex flex-col items-center justify-start min-h-screen text-white p-4">
+  <h1 class="text-4xl font-bold my-6 fixed top-0 w-full text-center py-4 text-white">タスク詳細</h1>
+  <div class="text-center w-full mt-32" style="margin-top: 80px;">
+    <h3 class="text-xl mb-2 block font-bold">タイトル</h3>
+    <p class="mb-4"><%= @task.name %></p>
 
-  <table class="table">
-    <tbody>
-      <tr>
-        <th>タイトル</th>
-        <td><%= @task.name %></td>
-      </tr>
-      <tr>
-        <th>説明</th>
-        <td><%= @task.description %></td>
-      </tr>
-      <tr>
-        <th>期限</th>
-        <td><%= @task.deadline %></td>
-      </tr>
-      <tr>
-        <th>カテゴリー</th>
-        <td><%= @task.category&.name || "No category" %></td>
-      </tr>
-      <tr>
-        <th>完了状況</th>
-        <td><%= translate_status(@task.status) %></td>
-      </tr>
-    </tbody>
-  </table>
+    <h3 class="text-xl mb-2 block font-bold">内容</h3>
+    <p class="mb-4"><%= @task.description %></p>
 
-  <br>
+    <h3 class="text-xl mb-2 block font-bold">期限</h3>
+    <p class="mb-4"><%= @task.deadline %></p>
 
-  <%= link_to '編集', edit_task_path(@task), class: 'btn btn-warning' %>
-  <%= link_to '戻る', tasks_path, class: 'btn btn-secondary ms-3' %>
+    <h3 class="text-xl mb-2 block font-bold">カテゴリー</h3>
+    <p class="mb-4"><%= @task.category&.name || "No category" %></p>
+
+    <h3 class="text-xl mb-2 block font-bold">完了状況</h3>
+    <p class="mb-4"><%= translate_status(@task.status) %></p>
+
+    <div class="flex justify-center space-x-4">
+      <%= link_to '編集', edit_task_path(@task), class: 'btn btn-warning' %>
+      <%= link_to '戻る', tasks_path, class: 'btn btn-secondary' %>
+    </div>
+  </div>
 </div>

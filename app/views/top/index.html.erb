@@ -11,12 +11,6 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* スクロールを無効化 */
-    }
-    header, footer {
-      background: #f8f9fa;
-      text-align: center;
-      padding: 10px 0;
     }
     #mainContainer {
       display: flex;
@@ -29,17 +23,17 @@
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden; /* スクロールを無効化 */
+      overflow: hidden;
       margin-left: -350px;
     }
     #calendarWrapper {
-      transform: scale(0.5); /* 縮小表示 */
-      transform-origin: center top; /* 縮小表示の起点を中央に設定 */
+      transform: scale(0.5);
+      transform-origin: center top;
       width: 100%;
       height: 100%;
       justify-content: center;
       align-items: center;
-      overflow: hidden; /* スクロールを無効化 */
+      overflow: hidden;
     }
     #calendar {
       width: 100%;
@@ -49,14 +43,11 @@
       flex: 1;
       overflow-y: auto;
       padding: 20px;
-      margin-left: -400px; /* 左に移動 */
+      margin-left: -400px;
     }
   </style>
 </head>
 <body>
-  <header class="bg-gray-800 text-white p-4">
-    <h1 class="text-2xl font-bold">スケジュール管理</h1>
-  </header>
   <div id="mainContainer">
     <div id="calendarContainer">
       <div id="calendarWrapper">
@@ -64,10 +55,10 @@
       </div>
     </div>
     <div id="tasksContainer">
-      <h1 class="mb-4">タスク一覧</h1>
+      <%= link_to 'TO DOリスト', tasks_path, class: 'btn btn-primary' %>
       <table class="table">
         <thead>
-          <tr>
+          <tr class="text-white">
             <th>タイトル</th>
             <th>説明</th>
             <th>期限</th>
@@ -87,9 +78,6 @@
       </table>
     </div>
   </div>
-  <footer class="bg-gray-800 text-white p-4 text-center">
-    フッターの内容
-  </footer>
 
   <!-- 予定追加・編集フォーム -->
   <div id="eventForm" style="display:none;" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
