@@ -1,9 +1,10 @@
 class User < ApplicationRecord
+  has_many :tasks, dependent: :destroy
   has_many :schedules, dependent: :destroy
   has_many :study_time_records, dependent: :destroy
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable
 
   has_one :profile, dependent: :destroy
   accepts_nested_attributes_for :profile

@@ -1,18 +1,17 @@
-<div class="flex flex-col items-center justify-center min-h-screen">
-  <div class="text-center">
-    <h1 class="text-4xl font-bold mb-6">ログイン画面</h1>
-
-    <div class="card py-5" style="width: 23rem;">
+<div class="flex flex-col items-center justify-start min-h-screen text-white p-4">
+  <h1 class="text-4xl font-bold my-6 fixed top-0 w-full text-center text-white">ログイン画面</h1>
+  <div class="text-center w-full mt-32" style="margin-top: 80px;">
+    <div class="card py-5 mx-auto" style="width: 23rem;">
       <div class="card-body">
-        <%= form_with model: @user, url: user_session_path do |f| %>
+        <%= form_with model: resource, scope: resource_name, url: session_path(resource_name), local: true do |f| %>
           <div class="mb-4">
             <%= f.label :name, class: "block font-bold mb-2" %>
-            <%= f.text_field :name, autofocus: true, autocomplete: "name", class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+            <%= f.text_field :name, autofocus: true, autocomplete: "name", class: "shadow appearance-none border rounded py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
           </div>
 
           <div class="mb-6">
             <%= f.label :password, class: "block font-bold mb-2" %>
-            <%= f.password_field :password, autocomplete: "current-password", class: "shadow appearance-none border rounded w-full py-2 px-3 text-gray-700 leading-tight focus:outline-none focus:shadow-outline" %>
+            <%= f.password_field :password, autocomplete: "current-password", class: "shadow appearance-none border rounded py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
           </div>
 
           <%= f.submit "ログイン", class: "btn btn-primary w-100" %>
@@ -28,7 +27,7 @@
       </div>
     </div>
 
-    <div class="card py-2 mt-3" style="width: 23rem;">
+    <div class="card py-2 mt-3 mx-auto" style="width: 23rem;">
       <div class="card-text">
         アカウントを持っていない？
         <%= link_to "ユーザー登録", new_user_registration_path, class: "text-blue-500 hover:text-blue-800" %>
