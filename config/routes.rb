@@ -4,6 +4,8 @@ Rails.application.routes.draw do
     registrations: 'users/registrations'
   }
 
+  resources :contacts, only: [:new, :create]
+
   unauthenticated do
     root "staticpages#index"
   end
