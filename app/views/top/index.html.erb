@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= csrf_meta_tags %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
   <style>
     body, html {
       height: 100%;
@@ -15,25 +18,21 @@
     #mainContainer {
       display: flex;
       flex: 1;
-      overflow: hidden;
+      height: calc(100% - 120px);
+      margin-bottom: 60px;
     }
     #calendarContainer {
-      flex: 3;
+      flex: 1;
       display: flex;
       flex-direction: column;
       align-items: center;
       justify-content: center;
-      overflow: hidden;
-      margin-left: -350px;
     }
     #calendarWrapper {
-      transform: scale(0.5);
-      transform-origin: center top;
       width: 100%;
       height: 100%;
       justify-content: center;
       align-items: center;
-      overflow: hidden;
     }
     #calendar {
       width: 100%;
@@ -43,11 +42,223 @@
       flex: 1;
       overflow-y: auto;
       padding: 20px;
-      margin-left: -400px;
+    }
+    #eventForm {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(31, 41, 55, 0.8);
+      z-index: 1000;
+    }
+    #new_event {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
     }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartkick@4.1.0/dist/chartkick.min.js"></script>
+
+<script>
+  document.addEventListener('turbo:load', function() {
+  if (document.getElementById('calendar')) {
+    initializeCalendar();
+  }
+});
+
+document.addEventListener('DOMContentLoaded', function() {
+  if (document.getElementById('calendar')) {
+    initializeCalendar();
+  }
+  document.addEventListener('touchstart', function(event) {}, { passive: true });
+});
+
+function initializeCalendar() {
+  if (!$('#calendar').length) {
+    console.error('Could not find calendar element.');
+    return;
+  }
+
+  $('#calendar').fullCalendar({
+    header: {
+      left: 'prev,next today',
+      center: 'title',
+      right: 'month,agendaWeek,agendaDay'
+    },
+    timezone: 'Asia/Tokyo',
+    events: function(start, end, timezone, callback) {
+      $.ajax({
+        url: '/schedules.json',
+        dataType: 'json',
+        success: function(data) {
+          var events = data.map(function(schedule) {
+            return {
+              id: schedule.id,
+              title: schedule.title,
+              start: moment(schedule.start_at).tz('Asia/Tokyo').format(),
+              end: moment(schedule.end_at).tz('Asia/Tokyo').format(),
+              category: schedule.category.name
+            };
+          });
+          $('#calendar').fullCalendar('removeEvents');
+          callback(events);
+        }
+      });
+    },
+    editable: true,
+    droppable: true,
+    selectable: true,
+    selectHelper: true,
+    select: function(start, end) {
+      $('#eventForm').show();
+      $('#event_start').val(moment(start).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm'));
+      $('#event_end').val(moment(end).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm'));
+      $('#event_id').val('');
+    },
+    eventDrop: function(event, delta, revertFunc) {
+      updateEvent(event);
+    },
+    eventResize: function(event, delta, revertFunc) {
+      updateEvent(event);
+    },
+    eventClick: function(event, jsEvent, view) {
+      $('#eventForm').show();
+      $('#event_title').val(event.title);
+      $('#event_category').val(event.category ? event.category : '');
+      $('#event_start').val(moment(event.start).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm'));
+      $('#event_end').val(event.end ? moment(event.end).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm') : '');
+      $('#event_id').val(event.id);
+
+      $('#new_event').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        saveEvent();
+      });
+    }
+  });
+
+  $('#new_event').off('submit').on('submit', function(e) {
+    e.preventDefault();
+    saveEvent();
+  });
+
+  $('#cancel_event').on('click', function() {
+    $('#eventForm').hide();
+    $('#new_event')[0].reset();
+  });
+
+  $('#delete_event').off('click').on('click', function() { // ここを修正
+    var event_id = $('#event_id').val();
+
+    if (confirm('このイベントを削除しますか？')) {
+      $.ajax({
+        url: '/schedules/' + event_id,
+        method: 'DELETE',
+        headers: {
+          'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+        },
+        success: function() {
+          $('#calendar').fullCalendar('removeEvents', event_id);
+          $('#eventForm').hide();
+          $('#new_event')[0].reset();
+          $('#calendar').fullCalendar('refetchEvents');
+        },
+        error: function() {
+          alert('削除中にエラーが発生しました。');
+        }
+      });
+    }
+  });
+
+  function updateEvent(event) {
+    $.ajax({
+      url: '/schedules/' + event.id,
+      method: 'PATCH',
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      data: {
+        schedule: {
+          title: event.title,
+          start_at: moment(event.start).tz('Asia/Tokyo').toISOString(),
+          end_at: event.end ? moment(event.end).tz('Asia/Tokyo').toISOString() : null
+        }
+      },
+      success: function() {
+        $('#calendar').fullCalendar('refetchEvents');
+      },
+      error: function() {
+        alert('予定の更新中にエラーが発生しました。');
+      }
+    });
+  }
+
+  function saveEvent() {
+    var title = $('#event_title').val();
+    var category_name = $('#event_category').val();
+    var start = moment($('#event_start').val()).tz('Asia/Tokyo').toISOString();
+    var end = moment($('#event_end').val()).tz('Asia/Tokyo').toISOString();
+    var event_id = $('#event_id').val();
+
+    var method = event_id ? 'PATCH' : 'POST';
+    var url = event_id ? '/schedules/' + event_id : '/schedules';
+
+    $.ajax({
+      url: url,
+      method: method,
+      headers: {
+        'X-CSRF-Token': $('meta[name="csrf-token"]').attr('content')
+      },
+      data: {
+        schedule: {
+          title: title,
+          category_name: category_name,
+          start_at: start,
+          end_at: end
+        }
+      },
+      success: function(data) {
+        if (method === 'POST') {
+          $('#calendar').fullCalendar('renderEvent', {
+            id: data.id,
+            title: data.title,
+            start: data.start_at,
+            end: data.end_at
+          }, true);
+        } else {
+          var updatedEvent = $('#calendar').fullCalendar('clientEvents', data.id)[0];
+          updatedEvent.title = data.title;
+          updatedEvent.start = moment(data.start_at);
+          updatedEvent.end = moment(data.end_at);
+          $('#calendar').fullCalendar('updateEvent', updatedEvent);
+        }
+        $('#eventForm').hide();
+        $('#new_event')[0].reset();
+        $('#calendar').fullCalendar('refetchEvents');
+      },
+      error: function(xhr) {
+        alert('予定の保存中にエラーが発生しました: ' + xhr.responseText);
+      }
+    });
+  }
+}
+</script>
+
 </head>
-<body>
+<body data-turbo-suppress-warning>
   <div id="mainContainer">
     <div id="calendarContainer">
       <div id="calendarWrapper">
@@ -65,7 +276,7 @@
             <th>完了状況</th>
           </tr>
         </thead>
-        <tbody>
+        <tbody id="tasks-table-body">
           <% @tasks.each do |task| %>
             <tr>
               <td><%= link_to task.name, task_path(task), class: 'text-blue-500 hover:underline' %></td>
@@ -80,7 +291,7 @@
   </div>
 
   <!-- 予定追加・編集フォーム -->
-  <div id="eventForm" style="display:none;" class="fixed top-0 left-0 w-full h-full bg-gray-800 bg-opacity-50 flex justify-center items-center">
+  <div id="eventForm">
     <form id="new_event" class="bg-white p-4 rounded-md shadow-md space-y-4">
       <input type="text" id="event_title" placeholder="予定のタイトル" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
       <input type="text" id="event_category" placeholder="カテゴリー" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
@@ -95,171 +306,6 @@
     </form>
   </div>
 
-  <script>
-    document.addEventListener('turbo:load', function() {
-      if (typeof jQuery !== 'undefined') {
-        $('#calendar').fullCalendar({
-          header: {
-            left: 'prev,next today',
-            center: 'title',
-            right: 'month,agendaWeek,agendaDay'
-          },
-          events: '/schedules.json',
-          editable: true,
-          droppable: true,
-          selectable: true,
-          selectHelper: true,
-          select: function(start, end) {
-            $('#eventForm').show();
-            $('#event_start').val(moment(start).format('YYYY-MM-DDTHH:mm'));
-            $('#event_end').val(moment(end).format('YYYY-MM-DDTHH:mm'));
-            $('#event_id').val('');
-          },
-          eventDrop: function(event, delta, revertFunc) {
-            updateEvent(event);
-          },
-          eventResize: function(event, delta, revertFunc) {
-            updateEvent(event);
-          },
-          eventClick: function(event, jsEvent, view) {
-            $('#eventForm').show();
-            $('#event_title').val(event.title);
-            $('#event_category').val(event.category ? event.category.name : '');
-            $('#event_start').val(moment(event.start).format('YYYY-MM-DDTHH:mm'));
-            $('#event_end').val(event.end ? moment(event.end).format('YYYY-MM-DDTHH:mm') : '');
-            $('#event_id').val(event.id);
-
-            $('#new_event').off('submit').on('submit', function(e) {
-              e.preventDefault();
-              var title = $('#event_title').val();
-              var category_name = $('#event_category').val();
-              var start = $('#event_start').val();
-              var end = $('#event_end').val();
-              var event_id = $('#event_id').val();
-
-              $.ajax({
-                url: '/schedules/' + event_id,
-                method: 'PATCH',
-                data: {
-                  schedule: {
-                    title: title,
-                    category_name: category_name,
-                    start_at: start,
-                    end_at: end
-                  }
-                },
-                success: function(data) {
-                  var updatedEvent = $('#calendar').fullCalendar('clientEvents', data.id)[0];
-                  updatedEvent.title = data.title;
-                  updatedEvent.start = moment(data.start_at);
-                  updatedEvent.end = moment(data.end_at);
-                  $('#calendar').fullCalendar('updateEvent', updatedEvent);
-                  $('#eventForm').hide();
-                  $('#new_event')[0].reset();
-                  $('#calendar').fullCalendar('refetchEvents');
-                },
-                error: function(xhr) {
-                  alert('予定の保存中にエラーが発生しました: ' + xhr.responseText);
-                }
-              });
-            });
-          }
-        });
-
-        $('#new_event').on('submit', function(e) {
-          e.preventDefault();
-          var title = $('#event_title').val();
-          var category_name = $('#event_category').val();
-          var start = $('#event_start').val();
-          var end = $('#event_end').val();
-          var event_id = $('#event_id').val();
-
-          var method = event_id ? 'PATCH' : 'POST';
-          var url = event_id ? '/schedules/' + event_id : '/schedules';
-
-          $.ajax({
-            url: url,
-            method: method,
-            data: {
-              schedule: {
-                title: title,
-                category_name: category_name,
-                start_at: start,
-                end_at: end
-              }
-            },
-            success: function(data) {
-              if (method === 'POST') {
-                $('#calendar').fullCalendar('renderEvent', {
-                  id: data.id,
-                  title: data.title,
-                  start: data.start_at,
-                  end: data.end_at
-                }, true);
-              } else {
-                var event = $('#calendar').fullCalendar('clientEvents', data.id)[0];
-                event.title = data.title;
-                event.start = moment(data.start_at);
-                event.end = moment(data.end_at);
-                $('#calendar').fullCalendar('updateEvent', event);
-              }
-              $('#eventForm').hide();
-              $('#new_event')[0].reset();
-              $('#calendar').fullCalendar('refetchEvents');
-            },
-            error: function(xhr) {
-              alert('予定の保存中にエラーが発生しました: ' + xhr.responseText);
-            }
-          });
-        });
-
-        $('#cancel_event').on('click', function() {
-          $('#eventForm').hide();
-          $('#new_event')[0].reset();
-        });
-
-        $('#delete_event').on('click', function() {
-          var event_id = $('#event_id').val();
-
-          if (confirm('このイベントを削除しますか？')) {
-            $.ajax({
-              url: '/schedules/' + event_id,
-              method: 'DELETE',
-              success: function() {
-                $('#calendar').fullCalendar('removeEvents', event_id);
-                $('#eventForm').hide();
-                $('#new_event')[0].reset();
-              },
-              error: function() {
-                alert('予定の削除中にエラーが発生しました。');
-              }
-            });
-          }
-        });
-
-        function updateEvent(event) {
-          $.ajax({
-            url: '/schedules/' + event.id,
-            method: 'PATCH',
-            data: {
-              schedule: {
-                title: event.title,
-                start_at: moment(event.start).format('YYYY-MM-DDTHH:mm'),
-                end_at: event.end ? moment(event.end).format('YYYY-MM-DDTHH:mm') : null
-              }
-            },
-            success: function() {
-              $('#calendar').fullCalendar('refetchEvents');
-            },
-            error: function() {
-              alert('予定の更新中にエラーが発生しました。');
-            }
-          });
-        }
-      } else {
-        console.error('jQuery is not loaded');
-      }
-    });
-  </script>
+  <div id="chart-1" style="height: 300px;"></div>
 </body>
 </html>

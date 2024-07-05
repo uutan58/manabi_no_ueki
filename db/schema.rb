@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_04_062935) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -41,6 +41,22 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
     t.datetime "updated_at", null: false
     t.index ["category_id"], name: "index_schedules_on_category_id"
     t.index ["user_id"], name: "index_schedules_on_user_id"
+  end
+
+  create_table "study_time_records", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "schedule_id", null: false
+    t.date "study_date"
+    t.time "start_time"
+    t.time "end_time"
+    t.integer "duration"
+    t.text "study_content"
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "processed"
+    t.index ["schedule_id"], name: "index_study_time_records_on_schedule_id"
+    t.index ["user_id"], name: "index_study_time_records_on_user_id"
   end
 
   create_table "tasks", force: :cascade do |t|
@@ -85,6 +101,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
   add_foreign_key "profiles", "users"
   add_foreign_key "schedules", "categories"
   add_foreign_key "schedules", "users"
+  add_foreign_key "study_time_records", "schedules", on_delete: :cascade
+  add_foreign_key "study_time_records", "users"
   add_foreign_key "tasks", "categories"
   add_foreign_key "tasks", "users"
 end

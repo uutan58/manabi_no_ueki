@@ -1,7 +1,9 @@
+// app/assets/javascripts/application.js
+//= require rails-ujs
 //= require jquery
 //= require moment
 //= require fullcalendar
-//= require fullcalendar/locale-all
-//= require rails-ujs
+//= require chartkick
+//= require Chart.bundle
 //= require turbolinks
 //= require_tree .

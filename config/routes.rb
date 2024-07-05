@@ -20,5 +20,11 @@ Rails.application.routes.draw do
 
   resources :tasks
 
+  resources :study_time_records, only: [:index, :new, :create, :destroy] do
+    collection do
+      get 'refresh'
+    end
+  end
+
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 end

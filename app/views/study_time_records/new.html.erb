@@ -1,0 +1,85 @@
+<div class="flex flex-col items-center justify-start min-h-screen">
+  <div class="text-center mt-6">
+    <%= form_with model: @study_time_record, local: true do |form| %>
+      <% if @study_time_record.errors.any? %>
+        <div id="error_explanation" class="mb-6">
+          <h2 class="text-xl font-bold text-red-600"><%= pluralize(@study_time_record.errors.count, "error") %> 件のエラーがあります:</h2>
+          <ul class="text-left text-red-600">
+            <% @study_time_record.errors.full_messages.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
+
+      <div class="mb-4">
+        <%= form.label :schedule_id, 'スケジュール', class: "text-xl block font-bold mb-2 text-white" %>
+        <%= form.collection_select :schedule_id, current_user.schedules, :id, :title, prompt: "スケジュールを選択", class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :study_date, '学習日', class: "text-xl block font-bold mb-2 text-white" %>
+        <%= form.date_field :study_date, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :start_time, '開始時間', class: "text-xl block font-bold mb-2 text-white" %>
+        <%= form.time_field :start_time, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :end_time, '終了時間', class: "text-xl block font-bold mb-2 text-white" %>
+        <%= form.time_field :end_time, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :duration, '学習時間(分)', class: "text-xl block font-bold mb-2 text-white" %>
+        <%= form.number_field :duration, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline", readonly: true %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :study_content, '学習内容', class: "text-xl block font-bold mb-2 text-white" %>
+        <%= form.text_area :study_content, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+      </div>
+
+      <div class="mb-4">
+        <%= form.label :comment, 'コメント', class: "text-xl block font-bold mb-2 text-white" %>
+        <%= form.text_area :comment, class: "shadow appearance-none border rounded w-full py-2 px-3 text-white leading-tight focus:outline-none focus:shadow-outline" %>
+      </div>
+
+      <div class="flex justify-center space-x-4">
+        <%= form.submit '学習時間を記録', class: "btn btn-primary" %>
+        <%= link_to '戻る', study_time_records_path, class: "btn btn-secondary" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    const startTimeField = document.getElementById('study_time_record_start_time');
+    const endTimeField = document.getElementById('study_time_record_end_time');
+    const durationField = document.getElementById('study_time_record_duration');
+
+    function calculateDuration() {
+      const startTime = startTimeField.value;
+      const endTime = endTimeField.value;
+
+      if (startTime && endTime) {
+        const start = new Date(`1970-01-01T${startTime}:00Z`);
+        const end = new Date(`1970-01-01T${endTime}:00Z`);
+        const duration = (end - start) / 60000; // 分に変換
+
+        if (duration >= 0) {
+          durationField.value = duration;
+        } else {
+          durationField.value = 0;
+        }
+      }
+    }
+
+    startTimeField.addEventListener('change', calculateDuration);
+    endTimeField.addEventListener('change', calculateDuration);
+  });
+</script>
+

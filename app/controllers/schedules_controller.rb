@@ -1,58 +1,85 @@
 class SchedulesController < ApplicationController
-  before_action :set_schedule, only: [:show, :edit, :update, :destroy]
-  before_action :authenticate_user! # Deviseなどを使用している場合
+  before_action :authenticate_user!
 
-  # GET /schedules.json
   def index
     @schedules = current_user.schedules.includes(:category)
-    render json: @schedules.to_json(include: :category)
+    render json: @schedules.as_json(include: { category: { only: [:name] } })
   end
 
-  # POST /schedules
-  # POST /schedules.json
   def create
     @schedule = current_user.schedules.build(schedule_params)
-    @schedule.category = Category.find_or_create_by(name: schedule_params[:category_name])
+    category = Category.find_or_create_by(name: schedule_params[:category_name])
+    @schedule.category = category
 
-    respond_to do |format|
-      if @schedule.save
-        format.json { render json: @schedule, status: :created }
-      else
-        format.json { render json: @schedule.errors, status: :unprocessable_entity }
-      end
+    if @schedule.save
+      create_study_time_record(@schedule)
+      render json: @schedule, status: :created
+    else
+      render json: @schedule.errors, status: :unprocessable_entity
     end
   end
 
-  # PATCH/PUT /schedules/1
-  # PATCH/PUT /schedules/1.json
   def update
-    @schedule.category = Category.find_or_create_by(name: schedule_params[:category_name])
-    respond_to do |format|
-      if @schedule.update(schedule_params)
-        format.json { render json: @schedule, status: :ok }
-      else
-        format.json { render json: @schedule.errors, status: :unprocessable_entity }
-      end
+    @schedule = Schedule.find(params[:id])
+    category = Category.find_or_create_by(name: schedule_params[:category_name])
+    @schedule.category = category
+
+    if @schedule.update(schedule_params)
+      update_study_time_record(@schedule)
+      render json: @schedule, status: :ok
+    else
+      render json: @schedule.errors, status: :unprocessable_entity
     end
   end
 
-  # DELETE /schedules/1
-  # DELETE /schedules/1.json
   def destroy
-    @schedule.destroy
-    respond_to do |format|
-      format.json { head :no_content }
+    @schedule = current_user.schedules.find_by(id: params[:id])
+    if @schedule
+      begin
+        ActiveRecord::Base.transaction do
+          @schedule.study_time_record&.destroy
+          @schedule.destroy
+        end
+        render json: { message: '削除しました' }, status: :ok
+      rescue => e
+        logger.error "Failed to delete schedule: #{e.message}"
+        render json: { error: '削除中にエラーが発生しました' }, status: :unprocessable_entity
+      end
+    else
+      render json: { error: 'スケジュールが見つかりませんでした' }, status: :not_found
     end
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_schedule
-      @schedule = current_user.schedules.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def schedule_params
-      params.require(:schedule).permit(:title, :start_at, :end_at, :category_name)
+  def schedule_params
+    params.require(:schedule).permit(:title, :category_name, :start_at, :end_at)
+  end
+
+  def create_study_time_record(schedule)
+    StudyTimeRecord.create!(
+      user: schedule.user,
+      schedule: schedule,
+      study_date: schedule.start_at.to_date,
+      start_time: schedule.start_at.strftime("%H:%M"),
+      end_time: schedule.end_at.strftime("%H:%M"),
+      duration: ((schedule.end_at - schedule.start_at) / 60).to_i,
+      study_content: schedule.title,
+      comment: schedule.category_name
+    )
+  end
+
+  def update_study_time_record(schedule)
+    study_time_record = StudyTimeRecord.find_by(schedule_id: schedule.id)
+    if study_time_record
+      study_time_record.update!(
+        study_date: schedule.start_at.to_date,
+        start_time: schedule.start_at.strftime("%H:%M"),
+        end_time: schedule.end_at.strftime("%H:%M"),
+        duration: ((schedule.end_at - schedule.start_at) / 60).to_i,
+        study_content: schedule.title,
+        comment: schedule.category_name
+      )
     end
+  end
 end
