@@ -1,6 +1,6 @@
 <div class="flex flex-col items-center justify-start min-h-screen">
   <h1 class="text-4xl font-bold my-6 fixed top-0 w-full text-center py-4 text-white font-bold">学習時間記録</h1>
-  <%= link_to '新しい記録を追加', new_study_time_record_path, data: { turbo: false }, class: "btn btn-success"%>
+  <%= link_to '新しい記録を追加', new_study_time_record_path, class: "btn btn-success"%>
   <div class="flex flex-row justify-start items-start" style="margin-top: 100px;">
     <div>
       <canvas id="study-time-chart" width="500" height="500"></canvas>
@@ -24,7 +24,7 @@
                 <td class="py-2 px-4"><%= record.study_content %></td>
                 <td class="py-2 px-4"><%= record.comment %></td>
                 <td class="py-2 px-4">
-                  <%= link_to '削除', study_time_record_path(record), method: :delete, data: { confirm: '本当に削除しますか？' }, class: 'btn btn-danger' %>
+                  <%= link_to '削除', study_time_record_path(record), data: { turbo_method: :delete, turbo_confirm: '本当に削除しますか？' }, class: 'btn btn-danger' %>
                 </td>
               </tr>
             <% end %>
@@ -40,12 +40,6 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
   document.addEventListener('turbo:load', function() {
-    if (document.getElementById('study-time-chart')) {
-      fetchStudyTimeRecords();
-    }
-  });
-
-  document.addEventListener('DOMContentLoaded', function() {
     if (document.getElementById('study-time-chart')) {
       fetchStudyTimeRecords();
     }
@@ -141,8 +135,8 @@
       deleteLink.href = `/study_time_records/${record.id}`;
       deleteLink.classList.add('btn', 'btn-danger');
       deleteLink.innerText = '削除';
-      deleteLink.dataset.method = 'delete';
-      deleteLink.dataset.confirm = '本当に削除しますか？';
+      deleteLink.dataset.turboMethod = 'delete';
+      deleteLink.dataset.turboConfirm = '本当に削除しますか？';
 
       actionCell.appendChild(deleteLink);
       row.appendChild(dateCell);
@@ -155,7 +149,3 @@
     });
   }
 </script>
-
-
-
-
