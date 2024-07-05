@@ -1,6 +1,8 @@
-<header class="bg-white flex flex-row justify-between items-center h-20 relative text-white ">
-  <div class="ml-4 md:mx-5 hover:text-blue-600 transition duration-300 text-lg">
-    <%= link_to 'ポートフォリオ', root_path, class: "btn btn-primary" %>
+<header class="bg-white flex flex-row justify-between items-center h-20 relative text-white">
+  <div class="ml-4 md:mx-5 hover:text-blue-600 transition duration-300 text-lg" style="display: flex; align-items: flex-end;">
+    <%= link_to root_path do %>
+      <%= image_tag('portfolio.png', alt: 'ポートフォリオ', style: 'margin-top: 80px;') %>
+    <% end %>
   </div>
 
   <div class="flex items-center space-x-3 lg:mx-5">
@@ -15,3 +17,4 @@
     <% end %>
   </div>
 </header>
+
