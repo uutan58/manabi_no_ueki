@@ -7,7 +7,7 @@
     <% if user_signed_in? %>
       <%= link_to '記事投稿', "#", class: "btn btn-primary" %>
       <%= link_to 'マイページ', mypage_path, class: "btn btn-primary" %>
-      <%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: "btn btn-primary" %>
+      <%= link_to 'ログアウト', destroy_user_session_path, method: :delete, data: { turbo: false }, class: "btn btn-primary" %>
     <% else %>
       <%= link_to '記事投稿', "#", class: "btn btn-primary" %>
       <%= link_to '新規登録', new_user_registration_path, class: "btn btn-primary" %>
