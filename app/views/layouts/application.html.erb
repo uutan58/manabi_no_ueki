@@ -9,7 +9,6 @@
   <%= favicon_link_tag 'favicon.png' %>
 
   <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
-
   <%= stylesheet_link_tag 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' %>
 
   <%= javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js' %>
@@ -19,7 +18,7 @@
   <%= javascript_include_tag 'https://cdn.jsdelivr.net/npm/chart.js' %>
   <%= javascript_include_tag 'chartkick' %>
 
-  <%= javascript_include_tag "application", "data-turbo-track": "reload"%>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload" %>
 
   <style>
     body, html {
@@ -43,8 +42,8 @@
 
     #content {
       flex: 1;
-      margin-top: 60px;
-      margin-bottom: 60px;
+      margin-top: 60px; /* Adjust if header height changes */
+      margin-bottom: 60px; /* Adjust if footer height changes */
       overflow-y: auto;
       width: 100%;
     }
