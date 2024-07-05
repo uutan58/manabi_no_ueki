@@ -19,7 +19,7 @@
   <%= javascript_include_tag 'https://cdn.jsdelivr.net/npm/chart.js' %>
   <%= javascript_include_tag 'chartkick' %>
 
-  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
+  <%= javascript_include_tag "application", "data-turbo-track": "reload"%>
 
   <style>
     body, html {
@@ -43,8 +43,8 @@
 
     #content {
       flex: 1;
-      margin-top: 60px; /* Adjust if header height changes */
-      margin-bottom: 60px; /* Adjust if footer height changes */
+      margin-top: 60px;
+      margin-bottom: 60px;
       overflow-y: auto;
       width: 100%;
     }
