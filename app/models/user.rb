@@ -1,8 +1,10 @@
 class User < ApplicationRecord
+  has_many :tasks, dependent: :destroy
   has_many :schedules, dependent: :destroy
+  has_many :study_time_records, dependent: :destroy
 
   devise :database_authenticatable, :registerable,
-         :recoverable, :rememberable, :validatable, :confirmable
+         :recoverable, :rememberable, :validatable
 
   has_one :profile, dependent: :destroy
   accepts_nested_attributes_for :profile
@@ -11,4 +13,9 @@ class User < ApplicationRecord
                    length: { maximum: 50 }
 
   validates :email, uniqueness: true
+
+  def completed_study_times
+    completed_schedules = schedules.where(is_completed: true)
+    study_time_records.where(schedule: completed_schedules)
+  end
 end

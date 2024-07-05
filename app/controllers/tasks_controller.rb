@@ -1,12 +1,13 @@
 class TasksController < ApplicationController
+  before_action :authenticate_user!
   before_action :set_task, only: [:show, :edit, :update, :destroy]
 
   def index
     case params[:status]
     when 'completed'
-      @tasks = Task.where(status: :完了)
+      @tasks = current_user.tasks.where(status: :完了)
     else
-      @tasks = Task.where.not(status: :完了)
+      @tasks = current_user.tasks.where.not(status: :完了)
     end
   end
 
@@ -14,12 +15,11 @@ class TasksController < ApplicationController
   end
 
   def new
-    @task = Task.new
+    @task = current_user.tasks.build
   end
 
   def create
-    @task = Task.new(task_params)
-    @task.user = current_user
+    @task = current_user.tasks.build(task_params)
     handle_category
 
     if @task.save
@@ -44,7 +44,6 @@ class TasksController < ApplicationController
   end
 
   def destroy
-    @task = Task.find(params[:id])
     @task.destroy
     redirect_to tasks_url, notice: 'タスクが削除されました。'
   end
@@ -52,7 +51,7 @@ class TasksController < ApplicationController
   private
 
   def set_task
-    @task = Task.find(params[:id])
+    @task = current_user.tasks.find(params[:id])
   end
 
   def task_params

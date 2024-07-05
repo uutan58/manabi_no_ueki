@@ -8,16 +8,16 @@
 
   <%= stylesheet_link_tag "application", media: "all", "data-turbo-track": "reload" %>
 
-  <!-- Load jQuery first -->
-  <%= javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js' %>
-
-  <!-- Load other scripts after jQuery -->
-  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
-
-  <!-- Load FullCalendar CSS and JS -->
   <%= stylesheet_link_tag 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css' %>
+
+  <%= javascript_include_tag 'https://code.jquery.com/jquery-3.6.0.min.js' %>
   <%= javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js' %>
   <%= javascript_include_tag 'https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js' %>
+
+  <%= javascript_include_tag 'https://cdn.jsdelivr.net/npm/chart.js' %>
+  <%= javascript_include_tag 'chartkick' %>
+
+  <%= javascript_include_tag "application", "data-turbo-track": "reload", defer: true %>
 
   <style>
     body, html {
@@ -26,14 +26,6 @@
       padding: 0;
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* Disable scrolling */
-    }
-
-    #content {
-      flex: 1;
-      overflow: hidden; /* Disable scrolling within the content area */
-      padding-top: 60px; /* Ensure content does not go under the header */
-      padding-bottom: 60px; /* Ensure content does not go under the footer */
     }
 
     header {
@@ -44,7 +36,15 @@
       color: white;
       text-align: center;
       padding: 10px 0;
-      z-index: 1000; /* Ensure header is above other content */
+      z-index: 1000;
+    }
+
+    #content {
+      flex: 1;
+      margin-top: 60px; /* Adjust if header height changes */
+      margin-bottom: 60px; /* Adjust if footer height changes */
+      overflow-y: auto;
+      width: 100%;
     }
 
     footer {
@@ -54,17 +54,17 @@
       background: #f8f9fa;
       text-align: center;
       padding: 10px 0;
-      z-index: 1000; /* Ensure footer is above other content */
+      z-index: 1000;
     }
   </style>
 </head>
 
-  <body>
-    <p class="notice"><%= notice %></p>
-    <%= render 'shared/header' %>
-    <div id="content">
-      <%= yield %>
-    </div>
-    <%= render 'shared/footer' %>
-  </body>
+<body data-turbo-suppress-warning>
+  <p class="notice"><%= notice %></p>
+  <%= render 'shared/header' %>
+  <div id="content">
+    <%= yield %>
+  </div>
+  <%= render 'shared/footer' %>
+</body>
 </html>

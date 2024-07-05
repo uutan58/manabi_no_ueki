@@ -1,3 +1,264 @@
-<h1>HOME画面</h1>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <%= stylesheet_link_tag 'application', media: 'all' %>
+  <%= csrf_meta_tags %>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.css" />
+  <style>
+    body, html {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+    }
+    #mainContainer {
+      display: flex;
+      flex: 1;
+      height: calc(100% - 120px);
+      margin-bottom: 60px;
+    }
+    #calendarContainer {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+    #calendarWrapper {
+      width: 100%;
+      height: 100%;
+      justify-content: center;
+      align-items: center;
+    }
+    #calendar {
+      width: 100%;
+      height: 100%;
+    }
+    #tasksContainer {
+      flex: 1;
+      overflow-y: auto;
+      padding: 20px;
+    }
+    #eventForm {
+      display: none;
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(31, 41, 55, 0.8);
+      z-index: 1000;
+    }
+    #new_event {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 90%;
+      max-width: 500px;
+    }
+    .button-container {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+    }
+    .button-container .btn {
+      margin-left: 10px;
+    }
+  </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.29.1/moment.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/moment-timezone/0.5.34/moment-timezone-with-data.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fullcalendar/3.10.2/fullcalendar.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chartkick@4.1.0/dist/chartkick.min.js"></script>
 
-<button class="bg-gray-900 hover:bg-gray-800 text-white rounded px-4 py-2">ゲストログイン</button>
+  <script>
+    var tempEvents = [];
+
+    document.addEventListener('turbo:load', function() {
+      if (document.getElementById('calendar')) {
+        initializeCalendar();
+      }
+    });
+
+    document.addEventListener('DOMContentLoaded', function() {
+      if (document.getElementById('calendar')) {
+        initializeCalendar();
+      }
+      document.addEventListener('touchstart', function(event) {}, { passive: true });
+    });
+
+    function initializeCalendar() {
+      if (!$('#calendar').length) {
+        console.error('Could not find calendar element.');
+        return;
+      }
+
+      $('#calendar').fullCalendar({
+        header: {
+          left: 'prev,next today',
+          center: 'title',
+          right: 'month,agendaWeek,agendaDay'
+        },
+        timezone: 'Asia/Tokyo',
+        events: function(start, end, timezone, callback) {
+          callback(tempEvents);
+        },
+        editable: true,
+        droppable: true,
+        selectable: true,
+        selectHelper: true,
+        select: function(start, end) {
+          $('#eventForm').show();
+          $('#event_start').val(moment(start).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm'));
+          $('#event_end').val(moment(end).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm'));
+          $('#event_id').val('');
+        },
+        eventDrop: function(event, delta, revertFunc) {
+          updateTempEvent(event);
+        },
+        eventResize: function(event, delta, revertFunc) {
+          updateTempEvent(event);
+        },
+        eventClick: function(event, jsEvent, view) {
+          $('#eventForm').show();
+          $('#event_title').val(event.title);
+          $('#event_category').val(event.category ? event.category : '');
+          $('#event_start').val(moment(event.start).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm'));
+          $('#event_end').val(event.end ? moment(event.end).tz('Asia/Tokyo').format('YYYY-MM-DDTHH:mm') : '');
+          $('#event_id').val(event.id);
+
+          $('#new_event').off('submit').on('submit', function(e) {
+            e.preventDefault();
+            saveTempEvent();
+          });
+        }
+      });
+
+      $('#new_event').off('submit').on('submit', function(e) {
+        e.preventDefault();
+        saveTempEvent();
+      });
+
+      $('#cancel_event').on('click', function() {
+        $('#eventForm').hide();
+        $('#new_event')[0].reset();
+      });
+
+      $('#delete_event').off('click').on('click', function() {
+        var event_id = $('#event_id').val();
+
+        tempEvents = tempEvents.filter(event => event.id != event_id);
+        $('#calendar').fullCalendar('removeEvents', event_id);
+        $('#eventForm').hide();
+        $('#new_event')[0].reset();
+      });
+
+      function updateTempEvent(event) {
+        var tempEvent = tempEvents.find(e => e.id === event.id);
+        if (tempEvent) {
+          tempEvent.start = event.start;
+          tempEvent.end = event.end;
+        }
+      }
+
+      function saveTempEvent() {
+        var title = $('#event_title').val();
+        var category_name = $('#event_category').val();
+        var start = moment($('#event_start').val()).tz('Asia/Tokyo').toISOString();
+        var end = moment($('#event_end').val()).tz('Asia/Tokyo').toISOString();
+        var event_id = $('#event_id').val();
+
+        if (event_id) {
+          var tempEvent = tempEvents.find(event => event.id === event_id);
+          tempEvent.title = title;
+          tempEvent.category = category_name;
+          tempEvent.start = start;
+          tempEvent.end = end;
+          $('#calendar').fullCalendar('updateEvent', tempEvent);
+        } else {
+          var newEvent = {
+            id: Date.now().toString(),
+            title: title,
+            category: category_name,
+            start: start,
+            end: end
+          };
+          tempEvents.push(newEvent);
+          $('#calendar').fullCalendar('renderEvent', newEvent, true);
+        }
+
+        $('#eventForm').hide();
+        $('#new_event')[0].reset();
+      }
+    }
+  </script>
+</head>
+<body data-turbo-suppress-warning>
+  <div id="mainContainer">
+    <div id="calendarContainer">
+      <div id="calendarWrapper">
+        <div id="calendar" class="p-4"></div>
+      </div>
+    </div>
+    <div id="tasksContainer">
+      <% if user_signed_in? %>
+        <%= link_to 'TO DOリスト', tasks_path, class: 'btn btn-primary' %>
+        <table class="table">
+          <thead>
+            <tr class="text-white">
+              <th>タイトル</th>
+              <th>説明</th>
+              <th>期限</th>
+              <th>完了状況</th>
+            </tr>
+          </thead>
+          <tbody id="tasks-table-body">
+            <% @tasks.each do |task| %>
+              <tr>
+                <td><%= link_to task.name, task_path(task), class: 'text-blue-500 hover:underline' %></td>
+                <td><%= task.description %></td>
+                <td><%= task.deadline %></td>
+                <td><%= translate_status(task.status) %></td>
+              </tr>
+            <% end %>
+          </tbody>
+        </table>
+      <% else %>
+        <p class="text-center text-white text-2xl">全ての機能を使用するには、ログイン or ユーザー登録をしてください。</p>
+        <div class="button-container">
+          <%= link_to 'ログイン', new_user_session_path, class: 'btn btn-primary' %>
+          <%= link_to 'ユーザー登録', new_user_registration_path, class: 'btn btn-secondary' %>
+        </div>
+      <% end %>
+    </div>
+  </div>
+
+  <!-- 予定追加・編集フォーム -->
+  <div id="eventForm">
+    <form id="new_event" class="bg-white p-4 rounded-md shadow-md space-y-4">
+      <input type="text" id="event_title" placeholder="予定のタイトル" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="text" id="event_category" placeholder="カテゴリー" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="datetime-local" id="event_start" placeholder="開始時間" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="datetime-local" id="event_end" placeholder="終了時間" class="form-control mb-2 w-full p-2 border border-gray-300 rounded-md">
+      <input type="hidden" id="event_id">
+      <div class="flex space-x-2">
+        <button type="submit" class="btn btn-primary flex-1 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-blue-600 text-base font-medium text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">保存</button>
+        <button type="button" class="btn btn-secondary flex-1 inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-0 bg-gray-600 text-base font-medium text-white hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-500" id="cancel_event">キャンセル</button>
+        <button type="button" class="btn btn-danger flex-1 inline-flex justify-center rounded-md border border-transparent shadow-sm px-4 py-2 bg-red-600 text-base font-medium text-white hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500" id="delete_event">削除</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="chart-1" style="height: 300px;"></div>
+</body>
+</html>

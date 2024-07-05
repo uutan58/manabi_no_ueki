@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
+ActiveRecord::Schema[7.0].define(version: 2024_07_05_090148) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -43,6 +43,22 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
     t.index ["user_id"], name: "index_schedules_on_user_id"
   end
 
+  create_table "study_time_records", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.bigint "schedule_id", null: false
+    t.date "study_date"
+    t.time "start_time"
+    t.time "end_time"
+    t.integer "duration"
+    t.text "study_content"
+    t.text "comment"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.boolean "processed"
+    t.index ["schedule_id"], name: "index_study_time_records_on_schedule_id"
+    t.index ["user_id"], name: "index_study_time_records_on_user_id"
+  end
+
   create_table "tasks", force: :cascade do |t|
     t.bigint "user_id", null: false
     t.bigint "category_id", null: false
@@ -68,16 +84,11 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
     t.datetime "reset_password_sent_at"
     t.datetime "reset_password_token_expires_at"
     t.datetime "remember_created_at"
-    t.string "confirmation_token"
-    t.datetime "confirmed_at"
-    t.datetime "confirmation_sent_at"
-    t.string "unconfirmed_email"
     t.datetime "confirmation_token_expires_at"
     t.datetime "last_login_at"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
     t.string "qiita_access_token"
-    t.index ["confirmation_token"], name: "index_users_on_confirmation_token", unique: true
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
@@ -85,6 +96,8 @@ ActiveRecord::Schema[7.0].define(version: 2024_05_03_140634) do
   add_foreign_key "profiles", "users"
   add_foreign_key "schedules", "categories"
   add_foreign_key "schedules", "users"
+  add_foreign_key "study_time_records", "schedules", on_delete: :cascade
+  add_foreign_key "study_time_records", "users"
   add_foreign_key "tasks", "categories"
   add_foreign_key "tasks", "users"
 end

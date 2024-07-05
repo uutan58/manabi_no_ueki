@@ -1,5 +1,8 @@
 Rails.application.routes.draw do
-  devise_for :users
+  devise_for :users, controllers: {
+    sessions: 'users/sessions',
+    registrations: 'users/registrations'
+  }
 
   unauthenticated do
     root "staticpages#index"
@@ -19,6 +22,12 @@ Rails.application.routes.draw do
   get "up" => "rails/health#show", as: :rails_health_check
 
   resources :tasks
+
+  resources :study_time_records, only: [:index, :new, :create, :destroy] do
+    collection do
+      get 'refresh'
+    end
+  end
 
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 end
