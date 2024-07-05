@@ -1,20 +1,19 @@
 <div class="flex flex-col items-center justify-start min-h-screen">
   <h1 class="text-4xl font-bold my-6 fixed top-0 w-full text-center py-4 text-white font-bold">学習時間記録</h1>
   <%= link_to '新しい記録を追加', new_study_time_record_path, data: { turbo: false }, class: "btn btn-success"%>
-  <div class="flex flex-row max-w-4xl mx-auto mt-32 justify-start items-start" style="margin-top: 100px;">
+  <div class="flex flex-row justify-start items-start" style="margin-top: 100px;">
     <div>
       <canvas id="study-time-chart" width="500" height="500"></canvas>
     </div>
     <div class="flex-1 overflow-auto">
       <% if @study_time_records.any? %>
         <table class="table-auto w-full text-center">
-          <thead class="bg-gray-200">
+          <thead>
             <tr>
               <th class="py-2 px-4">日付</th>
               <th class="py-2 px-4">学習時間</th>
               <th class="py-2 px-4">学習内容</th>
               <th class="py-2 px-4">コメント</th>
-              <th class="py-2 px-4">アクション</th>
             </tr>
           </thead>
           <tbody id="study-time-records-table">
