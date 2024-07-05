@@ -56,41 +56,40 @@
 </div>
 
 <script>
-  document.addEventListener('DOMContentLoaded', function() {
-  const startTimeField = document.getElementById('study_time_record_start_time');
-  const endTimeField = document.getElementById('study_time_record_end_time');
-  const durationField = document.getElementById('study_time_record_duration');
+  document.addEventListener('turbo:load', function() {
+    const startTimeField = document.getElementById('study_time_record_start_time');
+    const endTimeField = document.getElementById('study_time_record_end_time');
+    const durationField = document.getElementById('study_time_record_duration');
 
-  if (!startTimeField || !endTimeField || !durationField) {
-    console.error('必要なフィールドが見つかりません。');
-    return;
-  }
+    if (!startTimeField || !endTimeField || !durationField) {
+      console.error('必要なフィールドが見つかりません。');
+      return;
+    }
 
-  function calculateDuration() {
-    const startTime = startTimeField.value;
-    const endTime = endTimeField.value;
+    function calculateDuration() {
+      const startTime = startTimeField.value;
+      const endTime = endTimeField.value;
 
-    console.log('開始時間:', startTime);
-    console.log('終了時間:', endTime);
+      console.log('開始時間:', startTime);
+      console.log('終了時間:', endTime);
 
-    if (startTime && endTime) {
-      const start = new Date(`1970-01-01T${startTime}:00Z`);
-      const end = new Date(`1970-01-01T${endTime}:00Z`);
-      const duration = (end - start) / 60000; // 分に変換
+      if (startTime && endTime) {
+        const start = new Date(`1970-01-01T${startTime}:00Z`);
+        const end = new Date(`1970-01-01T${endTime}:00Z`);
+        const duration = (end - start) / 60000; // 分に変換
 
-      console.log('計算された時間:', duration);
+        console.log('計算された時間:', duration);
 
-      if (duration >= 0) {
-        durationField.value = duration;
-      } else {
-        durationField.value = 0;
+        if (duration >= 0) {
+          durationField.value = duration;
+        } else {
+          durationField.value = 0;
+        }
       }
     }
-  }
 
-  startTimeField.addEventListener('change', calculateDuration);
-  endTimeField.addEventListener('change', calculateDuration);
-});
-
+    startTimeField.addEventListener('change', calculateDuration);
+    endTimeField.addEventListener('change', calculateDuration);
+  });
 </script>
 
